@@ -1,0 +1,12 @@
+1: sound preference
+    1.1: 波段根据 Gaia control，修改为乘以倍数因子（3倍）的值
+    1.2：增加主MasterGain
+    1.3: 模式切换时，增加从耳机读回的校验，确保写入正确，同时显示进度图案，提醒用户正在修改中
+2： Never Forget
+    2.1: 关闭 headset/phone preference 选项，默认全开
+    2.2：以当前 RSSI为基准，调整Default值为 20 dBm, 大约2米~ 3米范围
+3：find phone
+    3.1 去掉滴滴提示声音 
+4：耗电问题
+    backgrond模式。减低GAIA 通讯的频率，由 5秒 RSSI刷新一次，改为 60秒，回到前台，立即恢复到5秒的频率。
+    

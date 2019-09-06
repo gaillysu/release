@@ -1,0 +1,10 @@
+0, 8K, PS, (none) # For PS Store
+1, 32K, RO, qcc3003_patch_bundle.xuv # Logical #0 : For DSP & firmware patches #0,1
+2, 32K, RO, (erase) # Logical #0 : For DSP & firmware patches #0,2
+3, 612K, RO, audio_prompts.xuv # Logical #1 Audio prompts #1,1
+4, 612K, RO, (erase) # Logical #1 Audio prompts #1,2
+5, 300K, RO, qcc3003.xuv # Logical #2 Main application image and other files. #2,1
+6, 300K, RO, (erase) # Logical #2 Main application image and other files. #2,2
+7, 8K, RO, sink_system_qcc300x.xuv # Logical #3 PSFS  #3,1
+8, 8K, RO, (erase) # Logical #3 PSFS #3,2
+9, *, RS, (erase)
