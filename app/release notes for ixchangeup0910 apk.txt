@@ -1,0 +1,10 @@
+1:修改支持后台运行（never forget, find phone）
+2:增加电量充满检测，刷新电池图标
+3：增加remote control在每个页面
+4：自动同步耳机信息（Alert LED on/off， EQ ，3D，BASS Booster，voice prompt onoff， firmware version）
+5: 修改OTA ，测试UA41的升级
+6：增加下载接口，用于 OTA 固件下载及电池信息表下载与解析
+7：修改开机流程，默认连接last device
+8: 增加自动连接功能，检测到系统连接成功后，APP也能自动连接。
+
+    
