@@ -1,0 +1,46 @@
+
+APP v1.04
+1:当设备处于BLE bonding时，设备名被区分显示:，也同样支持自动连接
+2：支持启动或重连接时，充电器状态查询，根据充电器插拔及充电器状态，来决定充电显示的图标 （需要firmware v11支持）
+
+
+
+
+
+
+
+
+
+=======================================================================================
+
+APP 版本 1.03
+
+1: 修改同步耳机数据失败问题，原来出现概率较高，本版本解决，并动画显示同步过程。
+2：修改电池电量计算方法，采用电压容量近似算法(由于二者非线性关系，此为近似值)
+3：修改充电器插拔响应事件，立即显示充电器状态
+4：电量、电压切换显示（按电量图标）
+5：重连接成功后，播放因link loss暂停播放器
+6：about界面，增加软件、固件版本显示。
+7：新增设备，弹出 产品list,供用户选择。
+8：setting界面 去掉通知菜单选项。
+9: 增加logcat， 输出电压变化数据（每分钟一次），方便评估通话及音乐时间。
+
+
+
+固件版本 10
+
+开机充电，不复位（PStools, Attach charger reset option: false）
+可连接状态下6分钟后自动关机 (ADK， switch timer: 360s)
+任何连接状态下，都可以找手机 (ADK，0,1 key "short" event, mask word: 0x3FFF)
+缩短关机时间：System timer：auto poweron timeout: 30s-->3s,不能为零 （ADK）
+其它：检查充电电流，电压监测threshold mapping table,LED filter/events/states config table
+      user events table
+
+VM：
+    ble bonding rename to model name + "-ble", for example: UA-42QT-V-ble
+    PIO-8,  initialize  low level, this is Volume+ key
+    report link loss event to App by gaia
+    block LED Suspend when charger in, for "find headset" feature
+    CHARGER_ATTACH_RESET_ENABLE, set it by VM trap function "ChargerConfigure", it is same as fixing it by pstools
+
+    
