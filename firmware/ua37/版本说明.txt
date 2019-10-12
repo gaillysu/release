@@ -1,0 +1,8 @@
+//最新版本文件
+ua-37qt_v12.xuv
+UA37QT-outsource-6nd-23.xml
+
+修改历史
+09.28：增加了音量按键音，去除CODEC使能PIO.7 (ua37不使用，UA42使用)
+存在问题：过频 item8 ~19 failed
+

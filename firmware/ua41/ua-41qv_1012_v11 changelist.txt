@@ -1,0 +1,10 @@
+ua-41qv_1012_v11 release  notes:
+
+1:based on IXCHANGE_NC09_191010_1.xuv (by ASKA, base version)
+2:merge audio_prompts.xuv (by iXchange, 4 languages audio prompts)
+3:merge qcc3005.xuv (by ASKA, build-in version v11)
+4:merge oem_key.psr (by iXchange, for OTA)
+5:merge musicmanager.psr (by ASKA, EQ setting)
+6:check PStool (by iXchange, devicename/MAC address/disable charger attach reset) 
+7:ADK config (by iXchange ,  user events/audio prompts/disable upgrade reset application reset)
+8:ADK config (by ASKA ,  user events /system & timer /battery&charger /user interface)

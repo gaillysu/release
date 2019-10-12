@@ -1,0 +1,172 @@
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//修改处 见注释 gaillysu
+
+
+
+修改说明：
+1：修改 BLE bonding 广播名字，以区分EDR pairing 名字
+
+
+
+//FILE NAME
+    sink_ble_advertising.c
+
+void bleSetupAdvertisingData(uint16 size_local_name, const uint8 *local_name, adv_discoverable_mode_t mode)
+{
+    uint16 ad_data_index = 0;
+    uint8 *ad_data = malloc( MAX_AD_DATA_SIZE_IN_OCTETS * sizeof(uint8));
+    uint8 *name_data = malloc( MAX_AD_DATA_SIZE_IN_OCTETS * sizeof(uint8));
+    uint8 name_len =size_local_name + 4;
+    memcpy(name_data,local_name,size_local_name);
+    /* gaillysu, rename the device  when ble bonding*/	
+    memcpy(&name_data[size_local_name],"-ble",4);
+
+	if( NULL != ad_data )
+	{
+    	/* Setup the flags advertising data */
+        ad_data_index = setupFlagsAdData(ad_data, mode);
+    
+		/* Setup the services advertising data */
+		ad_data_index = setupServicesAdData(ad_data, ad_data_index);
+    
+    	/* Setup the local name advertising data */
+    	ad_data_index = setupLocalNameAdvertisingData(ad_data, ad_data_index, name_len, name_data );
+
+    	/* Register AD data with the Connection library & Tidy up allocated memory*/
+    	ConnectionDmBleSetAdvertisingDataReq(ad_data_index, ad_data);
+
+        /* free the buffer after use */
+		free (ad_data);
+        free (name_data);
+	}
+	else
+	{
+		/* Panic, not enough room to BLE Advertise */
+	}
+}
+
+
+=========================================================================================================
+
+
+
+修改说明：
+1：定义固件版本号范围： 10~99，每次修改VM 或 PS 或 语音提示包，该版本增加1
+
+@file    sink_device_id.h
+
+
+#ifndef DEVICE_ID_CONST
+#define   DEVICE_ID_CONST
+#define   SINK_DEVICE_ID_SW_VERSION_MSB_HI  0xFFFF
+#define   SINK_DEVICE_ID_SW_VERSION_MSB_LO  0xFFFF
+#define   SINK_DEVICE_ID_SW_VERSION_LSB_HI  0xFFFF
+#define   SINK_DEVICE_ID_SW_VERSION_LSB_LO  0x0101   /* 10~ 99 gaillysu */
+
+#endif
+
+
+========================================================================================================
+修改说明：
+1：修改充电器状态查询，以备APP调用
+
+FILE NAME
+    sink_gaia.c
+
+static void gaia_get_notification(uint8 payload_length, uint8 *payload)
+{
+    uint16 response_len = 0;
+    uint8 response[6];
+    uint8 status = GAIA_STATUS_INVALID_PARAMETER;
+
+    if (payload_length > 0)
+    {
+        response[0] = payload[0];
+        response_len = 1;
+
+        switch (payload[0])
+        {
+        case GAIA_EVENT_PIO_CHANGED:
+            {
+                uint32 mask = gaia_get_pio_change_mask32();
+
+                response[1] = (mask != 0);
+                dwunpack(response + 2, mask);
+            response_len = 6;
+            status = GAIA_STATUS_SUCCESS;
+            }
+            break;
+
+        case GAIA_EVENT_BATTERY_CHARGED:
+            /*response[1] = gaia_get_notify_battery_charged();
+            response_len = 2;
+            */
+            /*gaillysu, when connect device, get the realy charger status */
+            {            
+            response[1] = gaia_get_notify_battery_charged();	     	
+	        response[2] = ChargerStatus();		
+	        response_len = 3;		
+            status = GAIA_STATUS_SUCCESS;
+        	}
+            break;
+
+        case GAIA_EVENT_CHARGER_CONNECTION:
+            response[1] = gaia_get_notify_charger_connection();
+            response_len = 2;
+            status = GAIA_STATUS_SUCCESS;
+            break;
+
+        case GAIA_EVENT_USER_ACTION:
+            response[1] = gaia_get_notify_ui_event();
+            response_len = 2;
+            status = GAIA_STATUS_SUCCESS;
+            break;
+
+#ifdef ENABLE_SPEECH_RECOGNITION
+        case GAIA_EVENT_SPEECH_RECOGNITION:
+            response[1] = gaia_get_notify_speech_rec();
+            response_len = 2;
+            status = GAIA_STATUS_SUCCESS;
+            break;
+#endif
+        }
+    }
+
+    gaia_send_response(GAIA_VENDOR_CSR, GAIA_COMMAND_GET_NOTIFICATION, status, response_len, response);
+}
+
+
+/*
+filename:sink_gaia.c
+line: 2769 
+function: gaia_send_application_version
+author: gaillysu
+
+修改原因：使用ADK config 设置的固件版本号，读出来是错误的，所以在这里使用宏定义，每次版本升级修改SINK_DEVICE_ID_SW_VERSION_LSB_LO 的值即可，版本规则见下面注释
+
+*/
+
+static void gaia_send_application_version(void)
+{
+	/*  Device ID is defined in sink_device_id.h  */
+	
+	#define   SINK_DEVICE_ID_SW_VERSION_MSB_HI  0xFFFF
+	#define   SINK_DEVICE_ID_SW_VERSION_MSB_LO  0xFFFF
+	#define   SINK_DEVICE_ID_SW_VERSION_LSB_HI  0xFFFF
+	#define   SINK_DEVICE_ID_SW_VERSION_LSB_LO  0x0101   /* 版本范围 10~ 99（十进制） , 十位数放在高字节，个位数放在低字节，例如v12 = 0x0102, v38 = 0x0308 */
+
+        uint16 payload[] = {0xFFFF,
+                        0xFFFF,
+                        0xFFFF,
+                        0xFFFF,
+                        SINK_DEVICE_ID_SW_VERSION_MSB_HI,
+                        SINK_DEVICE_ID_SW_VERSION_MSB_LO,
+                        SINK_DEVICE_ID_SW_VERSION_LSB_HI,
+                        SINK_DEVICE_ID_SW_VERSION_LSB_LO
+                        };
+
+     	gaia_send_response_16(GAIA_COMMAND_GET_APPLICATION_VERSION,
+                         GAIA_STATUS_SUCCESS, PS_SIZE_ADJ(sizeof(payload)), payload);
+
+}
+

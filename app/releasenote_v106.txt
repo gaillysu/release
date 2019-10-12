@@ -1,0 +1,9 @@
+fix changelist: v1.06
+1  according to the product model, show the different  gif in auto-pairing screen
+
+2: download the battery infomation  from website, refresh the remain call/music time
+
+3: read the charger status (firmware version:  v11 or above), to refresh the battery icon when charger is still in
+
+4: disable autoplay media when auto reconnect
+5: remove the slide bar and text in the "never forget alert" screen
